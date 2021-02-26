@@ -1,32 +1,26 @@
 import axios from 'axios'
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import config from '../config'
 import {Link} from 'react-router-dom'
 
-export default class TodoDetail extends Component {
 
-  state = {
-    todo: {}
-  }
+function TodoDetail(props) {
 
-  componentDidMount(){
-    console.log(this.props) 
- 
-   let todoId = this.props.match.params.todoId
+  const [todo, updateTodo] = useState({})
+
+  useEffect(() => {
+    let todoId = props.match.params.todoId
     axios.get(`${config.API_URL}/api/todos/${todoId}`)
       .then((response) => {
-        this.setState({ todo: response.data })
+        updateTodo(response.data)
       })
       .catch(() => {
         console.log('Detail fecth failed')
       })
-  }
+  }, [])
 
-  render() {
-    const {todo} = this.state
-    const {onDelete} = this.props
-    console.log(this.props)
-    return (
+  const {onDelete} = props
+  return (
       <div>
         <h4>Details are:</h4>
         <div>Name: {todo.name}</div>
@@ -38,5 +32,6 @@ export default class TodoDetail extends Component {
 
       </div>
     )
-  }
 }
+
+export default TodoDetail

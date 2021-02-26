@@ -1,56 +1,48 @@
 import axios from 'axios'
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import config from '../config'
 
-export default class EditForm extends Component {
+function EditForm({match, onEdit}) {
 
-  state = {
-    todo: {}
-  }
+  const [todo, updateTodo] = useState({})
 
-  componentDidMount(){
-    let todoId = this.props.match.params.todoId
+  useEffect(() => {
+    let todoId = match.params.todoId
     axios.get(`${config.API_URL}/api/todos/${todoId}`)
       .then((response) => {
-        this.setState({
-          todo: response.data
-        })
+        updateTodo(response.data)
       })
       .catch(() => {
         console.log('Detail fecth failed')
       })
-  }
+  }, [])
 
-  handleNameChange = (event) => {
+  const handleNameChange = (event) => {
     let text = event.target.value
-    console.log(text)
-    let cloneTodo = JSON.parse(JSON.stringify(this.state.todo))
+    let cloneTodo = JSON.parse(JSON.stringify(todo))
     cloneTodo.name = text
 
-    this.setState({
-      todo: cloneTodo
-    })
+    updateTodo(cloneTodo)
   }
 
-  handleDescChange = (event) => {
+  const handleDescChange = (event) => {
     let text = event.target.value
-    let cloneTodo = JSON.parse(JSON.stringify(this.state.todo))
+    let cloneTodo = JSON.parse(JSON.stringify(todo))
     cloneTodo.description = text
-
-    this.setState({
-      todo: cloneTodo
-    })
+    updateTodo(cloneTodo)
   }
 
-  render() {
-    const {todo} = this.state
-    const {onEdit} = this.props
-    return (
-      <div>
-          <input type="text" onChange={this.handleNameChange} value={todo.name}/>
-          <input type="text" onChange={this.handleDescChange} value={todo.description}/>
-          <button onClick={ () => { onEdit(todo) } }  >Submit</button>
-      </div>
-    )
-  }
+  return (
+    <div>
+        <input type="text" onChange={handleNameChange} value={todo.name}/>
+        <input type="text" onChange={handleDescChange} value={todo.description}/>
+        <button onClick={ () => { onEdit(todo) } }  >Submit</button>
+    </div>
+  )
 }
+
+
+export default EditForm
+
+
+
